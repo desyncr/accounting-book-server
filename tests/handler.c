@@ -170,7 +170,7 @@ TEST txt_handle_credit_and_debit(void) {
     memset(&operation, 0, OPERATION_SIZE);
     memset(&result, 0, sizeof(result));
 
-    memcpy(operation.operation, TXT_OPERATION_READ_STR, OPERATION_CODE_SIZE);
+    memcpy(operation.operation, TXT_OPERATION_READ_BALANCE_STR, OPERATION_CODE_SIZE);
     memcpy(operation.account, "123123123123", ACCOUNT_IDENTIFIER_SIZE);
 
     txt_handle(operation, &result);

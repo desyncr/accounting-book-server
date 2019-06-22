@@ -4,6 +4,7 @@
 #include <time.h>
 
 #define ACCOUNT_IDENTIFIER_SIZE 20
+#define TRANSACTION_IDENTIFIER_SIZE 20
 
 struct Account {
     int  id         ;
@@ -18,11 +19,14 @@ struct Account {
 #define TIMESTAMP_SIZE          14
 #define AMOUNT_SIZE             6
 #define MAX_THREADS             100
+#define MAX_OPERATION_LIST      10
 
 struct OperationResult {
     int status;
     char message        [OPERATION_RESULT_MESSAGE_LENGTH];
     struct Account account;
+    int transactions_cnt;
+    struct TransactionLog *transactions[MAX_OPERATION_LIST];
 };
 
 struct Operation {
@@ -40,6 +44,7 @@ enum TransactionStatus {
 };
 
 struct TransactionLog {
+    char identifier     [TRANSACTION_IDENTIFIER_SIZE];
     char account        [ACCOUNT_IDENTIFIER_SIZE];
     float amount        ;
     enum TransactionStatus   status;
@@ -59,14 +64,17 @@ struct TransactionLog {
 
 #define TXT_OPERATION_DEBIT             100
 #define TXT_OPERATION_CREDIT            101
-#define TXT_OPERATION_READ              102
+#define TXT_OPERATION_READ_BALANCE      102
+#define TXT_OPERATION_READ_TRANSACTION  103
 
-#define TXT_OPERATION_DEBIT_STR         "100"
-#define TXT_OPERATION_CREDIT_STR        "101"
-#define TXT_OPERATION_READ_STR          "102"
+#define TXT_OPERATION_DEBIT_STR             "100"
+#define TXT_OPERATION_CREDIT_STR            "101"
+#define TXT_OPERATION_READ_BALANCE_STR      "102"
+#define TXT_OPERATION_READ_TRANSACTION_STR  "103"
 
 #define TXT_ERROR_UNKNOWN_ACCOUNT       1000
 #define TXT_ERROR_INSUFFICIENT_FUNDS    1001
+#define TXT_ERROR_UNKNOWN_TRANSACTION   1002
 
 #define TXT_ERROR_INVALID_AMOUNT         2000
 #define TXT_ERROR_INVALID_ACCOUNT_NUMBER 2001

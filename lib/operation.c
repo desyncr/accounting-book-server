@@ -33,3 +33,9 @@ int txt_process_read_for_account(struct Operation operation, struct Account *acc
 
     return result->status;
 }
+
+int txt_process_read_for_transaction(struct Operation operation, struct Account *account, struct OperationResult *result) {
+    result->status = TXT_OPERATION_SUCCESS;
+
+    return result->status;
+}

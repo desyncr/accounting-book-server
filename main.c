@@ -46,6 +46,16 @@ void * thread(void *arg) {
           case TXT_ERROR_INSUFFICIENT_FUNDS:
           case TXT_ERROR_INVALID_AMOUNT:
               sprintf(response, "%20s%04d%010.2f\n", result.account.number, result.status, result.account.balance);
+              for (int i = 0; i < result.transactions_cnt; i++) {
+                sprintf(response,
+                        "%s%s%010.2f%04d%lld\n",
+                        response,
+                        result.transactions[i]->identifier,
+                        result.transactions[i]->amount,
+                        result.transactions[i]->status,
+                        (long long)result.transactions[i]->time
+                );
+              }
               break;
           case TXT_ERROR_UNKNOWN_ACCOUNT:
           case TXT_ERROR_INVALID_ACCOUNT_NUMBER:
@@ -57,6 +67,7 @@ void * thread(void *arg) {
 
       err = send(client_fd, response, strlen(response), 0);
       if (err < 0) on_error("Client write failed\n");
+      shutdown(client_fd, 2);
     }
 
     return 0;
