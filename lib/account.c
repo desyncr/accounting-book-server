@@ -43,7 +43,7 @@ struct Account *txt_get_account(struct Operation operation) {
     return 0;
 }
 
-#if ALLOW_CREATE_ACCOUNT_ON_THE_FLAY == 1
+#if ALLOW_CREATE_ACCOUNT_ON_THE_FLY == 1
 struct Account *txt_get_or_create_account(struct Operation operation) {
     int idx;
     if ((idx = txt_exists_account(operation)) >= 0) {

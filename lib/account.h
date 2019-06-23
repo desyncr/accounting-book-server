@@ -2,7 +2,7 @@
 #define ACCOUNT_H
 #include "operation.h"
 
-#define ALLOW_CREATE_ACCOUNT_ON_THE_FLAY 1
+#define ALLOW_CREATE_ACCOUNT_ON_THE_FLY 1
 
 struct Account *txt_create_account(struct Operation operation);
 int txt_exists_account(struct Operation operation);
