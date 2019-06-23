@@ -77,15 +77,24 @@ int txt_add_transation_log(struct Operation operation, struct Account account, s
 
     memcpy(log->account, operation.account, ACCOUNT_IDENTIFIER_SIZE);
     sprintf(log->identifier,
-            "%04d%04d%04d%04d%03d",
+            "%08d%04d%04d%04d",
             transaction_idx,
-            rand() % 9999,
-            rand() % 9999,
-            rand() % 9999,
+            rand() % 999,
+            rand() % 999,
             rand() % 999
     );
-    log->amount = atoi(operation.amount);
     log->time = time(NULL);
+    log->amount = atoi(operation.amount);
+
+    switch (txt_get_operation_code(operation))
+    {
+        case TXT_OPERATION_DEBIT:
+            log->type = Debit;
+            break;
+        case TXT_OPERATION_CREDIT:
+            log->type = Credit;
+            break;
+    }
 
     switch (result.status)
     {
@@ -111,7 +120,7 @@ int txt_add_transation_log(struct Operation operation, struct Account account, s
 int txt_get_transactions_for_account(struct Operation operation, struct OperationResult *result) {
     int i = 0; result->transactions_cnt = 0;
 
-    for (i = 0; i < transaction_idx-1; i++) {
+    for (i = 0; i < transaction_idx; i++) {
         if (memcmp(transaction_log[i].account, operation.account, ACCOUNT_IDENTIFIER_SIZE) == 0) {
             struct TransactionLog *log = malloc(sizeof(struct TransactionLog));
             memcpy(log, &transaction_log[i], sizeof(struct TransactionLog));
@@ -128,10 +137,12 @@ int txt_get_transactions_for_account(struct Operation operation, struct Operatio
 int txt_get_transaction_by_id(struct Operation operation, struct OperationResult *result) {
     int i = 0; result->transactions_cnt = 0;
 
-    for (i = 0; i < transaction_idx-1; i++) {
-        if (memcmp(transaction_log[i].identifier, operation.account, TRANSACTION_IDENTIFIER_SIZE) == 0) {
+    for (i = 0; i < transaction_idx; i++) {
+        if (memcmp(transaction_log[i].identifier, operation.account, TRANSACTION_IDENTIFIER_SIZE-1) == 0) {
             struct TransactionLog *log = malloc(sizeof(struct TransactionLog));
             memcpy(log, &transaction_log[i], sizeof(struct TransactionLog));
+
+            memcpy(result->account.number, transaction_log[i].account, TRANSACTION_IDENTIFIER_SIZE);
 
             result->transactions[result->transactions_cnt] = log;
             result->transactions_cnt++;
@@ -142,6 +153,7 @@ int txt_get_transaction_by_id(struct Operation operation, struct OperationResult
 }
 
 int txt_handle(struct Operation operation, struct OperationResult *result) {
+    memcpy(&result->account, operation.account, sizeof(result->account));
 
     result->status = txt_validate_account_identifier(operation);
     if (result->status != TXT_VALIDATION_CONTINUE)
@@ -167,15 +179,20 @@ int txt_handle(struct Operation operation, struct OperationResult *result) {
     struct Account *account = txt_get_account(operation);
 #endif
 
+    result->account = *account;
     switch (txt_get_operation_code(operation))
     {
         case TXT_OPERATION_DEBIT:
-            txt_process_debit_for_account(operation, account, result);
-            txt_add_transation_log(operation, *account, *result);
+            if (txt_process_debit_for_account(operation, account, result) == 0) {
+                txt_add_transation_log(operation, *account, *result);
+            }
+            txt_get_transactions_for_account(operation, result);
             break;
         case TXT_OPERATION_CREDIT:
-            txt_process_credit_for_account(operation, account, result);
-            txt_add_transation_log(operation, *account, *result);
+            if (txt_process_credit_for_account(operation, account, result) == 0) {
+                txt_add_transation_log(operation, *account, *result);
+            }
+            txt_get_transactions_for_account(operation, result);
             break;
         case TXT_OPERATION_READ_BALANCE:
             txt_process_read_for_account(operation, account, result);
@@ -186,8 +203,6 @@ int txt_handle(struct Operation operation, struct OperationResult *result) {
             txt_get_transaction_by_id(operation, result);
             break;
     }
-
-    result->account = *account;
 
     return result->status;
 }

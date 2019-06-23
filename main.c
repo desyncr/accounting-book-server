@@ -30,6 +30,7 @@ void * thread(void *arg) {
       memset(&result, 0, sizeof(struct OperationResult));
 
       int read = recv(client_fd, buffer, OPERATION_SIZE, 0);
+      printf("Request: %s\n", buffer);
 
       if (!read) break; // done reading
       if (read < 0) on_error("Client read failed\n");
@@ -46,16 +47,20 @@ void * thread(void *arg) {
           case TXT_ERROR_INSUFFICIENT_FUNDS:
           case TXT_ERROR_INVALID_AMOUNT:
               sprintf(response, "%20s%04d%010.2f\n", result.account.number, result.status, result.account.balance);
+
               for (int i = 0; i < result.transactions_cnt; i++) {
                 sprintf(response,
-                        "%s%s%010.2f%04d%lld\n",
+                        "%s%20s%010.2f%04d%04d%lld\n",
                         response,
                         result.transactions[i]->identifier,
                         result.transactions[i]->amount,
                         result.transactions[i]->status,
+                        result.transactions[i]->type,
                         (long long)result.transactions[i]->time
                 );
               }
+
+              printf("Response: %s\n\n", response);
               break;
           case TXT_ERROR_UNKNOWN_ACCOUNT:
           case TXT_ERROR_INVALID_ACCOUNT_NUMBER:

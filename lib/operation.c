@@ -6,7 +6,9 @@
 #include "operation.h"
 
 int txt_process_debit_for_account(struct Operation operation, struct Account *account, struct OperationResult *result) {
-    if (account->balance < atof(operation.amount))
+    if (account->balance - atof(operation.amount) < 0
+            || account->balance < atof(operation.amount)
+    )
     {
         result->status = TXT_ERROR_INSUFFICIENT_FUNDS;
 

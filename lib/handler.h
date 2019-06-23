@@ -16,10 +16,10 @@ struct Account {
 #define OPERATION_RESULT_MESSAGE_LENGTH 256
 
 #define OPERATION_CODE_SIZE     3
-#define TIMESTAMP_SIZE          14
+#define TIMESTAMP_SIZE          14 // YYYYMMDDHHMMSS
 #define AMOUNT_SIZE             6
 #define MAX_THREADS             100
-#define MAX_OPERATION_LIST      10
+#define MAX_OPERATION_LIST      1000
 
 struct OperationResult {
     int status;
@@ -43,9 +43,15 @@ enum TransactionStatus {
     Invalid
 };
 
+enum TransactionType {
+    Debit,
+    Credit
+};
+
 struct TransactionLog {
-    char identifier     [TRANSACTION_IDENTIFIER_SIZE];
-    char account        [ACCOUNT_IDENTIFIER_SIZE];
+    char identifier     [TRANSACTION_IDENTIFIER_SIZE+1];
+    char account        [ACCOUNT_IDENTIFIER_SIZE+1];
+    enum TransactionType type;
     float amount        ;
     enum TransactionStatus   status;
     time_t time         ;
