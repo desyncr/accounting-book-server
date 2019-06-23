@@ -3,7 +3,7 @@ PREFIX ?= /usr/local
 CFLAGS =-Wall -g -std=c99 -D_POSIX_C_SOURCE=2 -pthread
 MAIN ?= server
 PORT ?= 8080
-BIN  ?= 'bin'
+BIN  ?= bin
 IMAGE ?= accounting-server
 
 make: *.c
