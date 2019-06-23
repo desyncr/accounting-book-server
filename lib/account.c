@@ -39,6 +39,8 @@ struct Account *txt_get_account(struct Operation operation) {
     if ((idx = txt_exists_account(operation))) {
         return &accounts[idx];
     }
+
+    return 0;
 }
 
 #if ALLOW_CREATE_ACCOUNT_ON_THE_FLAY == 1
