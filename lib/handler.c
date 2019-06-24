@@ -153,7 +153,7 @@ int txt_get_transaction_by_id(struct Operation operation, struct OperationResult
 }
 
 int txt_handle(struct Operation operation, struct OperationResult *result) {
-    memcpy(&result->account, operation.account, sizeof(result->account));
+    memcpy(&result->account.number, operation.account, ACCOUNT_IDENTIFIER_SIZE);
 
     result->status = txt_validate_account_identifier(operation);
     if (result->status != TXT_VALIDATION_CONTINUE)
@@ -179,7 +179,6 @@ int txt_handle(struct Operation operation, struct OperationResult *result) {
     struct Account *account = txt_get_account(operation);
 #endif
 
-    result->account = *account;
     switch (txt_get_operation_code(operation))
     {
         case TXT_OPERATION_DEBIT:
