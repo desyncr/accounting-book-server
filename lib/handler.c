@@ -179,6 +179,7 @@ int txt_handle(struct Operation operation, struct OperationResult *result) {
     struct Account *account = txt_get_account(operation);
 #endif
 
+    result->account.balance = account->balance;
     switch (txt_get_operation_code(operation))
     {
         case TXT_OPERATION_DEBIT:
