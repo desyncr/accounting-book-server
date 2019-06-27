@@ -68,6 +68,7 @@ void * thread(void *arg) {
           case TXT_ERROR_INVALID_TIMESTAMP:
           default:
               recover("Operation failed due to an error: %d\n", result.status);
+              sprintf(response, "\n\n");
       }
 
       err = send(client_fd, response, strlen(response), 0);
